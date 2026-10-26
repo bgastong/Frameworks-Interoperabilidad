@@ -11,6 +11,16 @@ const config: Core.Config.Middlewares = [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
+  {
+    name: 'global::turnstile',
+    config: {
+      rutas: {
+        '/api/auth/local': 'login',
+        '/api/auth/local/register': 'registro',
+        '/api/auth/forgot-password': 'recuperar',
+      },
+    },
+  },
 ];
 
 export default config;

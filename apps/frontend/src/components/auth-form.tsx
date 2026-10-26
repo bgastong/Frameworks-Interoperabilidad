@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 import { authenticate, type AuthMode } from "@/lib/auth"
+import { VerificacionTurnstile, useTurnstile } from "@/components/verificacion-turnstile"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -39,6 +40,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter()
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const turnstile = useTurnstile()
   const text = copy[mode]
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -51,7 +53,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         username: String(data.get("username") ?? ""),
         email: String(data.get("email")),
         password: String(data.get("password")),
-      })
+      }, turnstile.token)
       // Conservar únicamente el destino del canal, nunca una URL arbitraria.
       const source = new URLSearchParams(window.location.search)
       const destination = new URLSearchParams()
@@ -63,6 +65,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado")
       setLoading(false)
+      turnstile.reiniciar()
     }
   }
 
@@ -100,6 +103,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 ¿Olvidaste tu contraseña?
               </Link>
             )}
+            <VerificacionTurnstile key={turnstile.clave} accion={mode} onToken={turnstile.onToken} />
             {error && (
               <p role="alert" className="text-sm text-destructive">
                 {error}
@@ -107,7 +111,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             )}
           </CardContent>
           <CardFooter className="mt-4 flex flex-col gap-3">
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full" disabled={loading || !turnstile.listo}>
               {loading ? "Enviando..." : text.submit}
             </Button>
             <p className="text-sm text-muted-foreground">

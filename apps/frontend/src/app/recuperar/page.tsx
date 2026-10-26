@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 
 import { pedirRecuperacion } from "@/lib/auth"
+import { VerificacionTurnstile, useTurnstile } from "@/components/verificacion-turnstile"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +13,7 @@ export default function RecuperarPage() {
   const [enviado, setEnviado] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const turnstile = useTurnstile()
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -19,10 +21,11 @@ export default function RecuperarPage() {
     setError("")
     setLoading(true)
     try {
-      await pedirRecuperacion(email)
+      await pedirRecuperacion(email, turnstile.token)
       setEnviado(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado")
+      turnstile.reiniciar()
     } finally {
       setLoading(false)
     }
@@ -51,6 +54,7 @@ export default function RecuperarPage() {
                 Email
                 <Input name="email" type="email" required autoComplete="email" />
               </label>
+              <VerificacionTurnstile key={turnstile.clave} accion="recuperar" onToken={turnstile.onToken} />
               {error && (
                 <p role="alert" className="text-sm text-destructive">
                   {error}
@@ -58,7 +62,7 @@ export default function RecuperarPage() {
               )}
             </CardContent>
             <CardFooter className="mt-4 flex flex-col gap-3">
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading || !turnstile.listo}>
                 {loading ? "Enviando..." : "Enviar enlace"}
               </Button>
               <Link href="/login" className="text-sm text-muted-foreground underline">
@@ -70,4 +74,4 @@ export default function RecuperarPage() {
       </Card>
     </main>
   )
-}
+}

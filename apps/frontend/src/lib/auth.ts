@@ -10,12 +10,13 @@ export type AuthFields = {
   password: string
 }
 
-export async function authenticate(mode: AuthMode, fields: AuthFields) {
+export async function authenticate(mode: AuthMode, fields: AuthFields, turnstileToken?: string) {
   const path = mode === "login" ? "/api/auth/local" : "/api/auth/local/register"
-  const body =
+  const credenciales =
     mode === "login"
       ? { identifier: fields.email, password: fields.password }
       : fields
+  const body = turnstileToken ? { ...credenciales, turnstileToken } : credenciales
 
   const res = await fetch(API_URL + path, {
     method: "POST",
@@ -75,8 +76,8 @@ async function postAuth(path: string, body: unknown) {
 }
 
 // Pide a Strapi que mande el mail de recuperacion (lo envia con Resend).
-export async function pedirRecuperacion(email: string) {
-  await postAuth("/api/auth/forgot-password", { email })
+export async function pedirRecuperacion(email: string, turnstileToken?: string) {
+  await postAuth("/api/auth/forgot-password", turnstileToken ? { email, turnstileToken } : { email })
 }
 
 // Cambia la contraseña con el codigo del mail y deja la sesion iniciada.
@@ -84,4 +85,4 @@ export async function restablecerPassword(code: string, password: string, passwo
   const json = await postAuth("/api/auth/reset-password", { code, password, passwordConfirmation })
   localStorage.setItem(TOKEN_KEY, json.jwt)
   localStorage.setItem(USER_KEY, json.user.username)
-}
+}
