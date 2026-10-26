@@ -88,6 +88,11 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 autoComplete={mode === "login" ? "current-password" : "new-password"}
               />
             </label>
+            {mode === "login" && (
+              <Link href="/recuperar" className="-mt-2 self-end text-sm text-muted-foreground underline">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            )}
             {error && (
               <p role="alert" className="text-sm text-destructive">
                 {error}

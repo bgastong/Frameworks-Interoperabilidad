@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "0.1.0",
   "private": true,
-  "description": "CMS y API de comunidades, canales, membres\u00edas y mensajes de Community Hub",
+  "description": "CMS y API de comunidades, canales, membresías y mensajes de Community Hub",
   "scripts": {
     "build": "strapi build",
     "console": "strapi console",
@@ -18,6 +18,7 @@
     "@strapi/database": "5.55.1",
     "@strapi/plugin-cloud": "5.55.1",
     "@strapi/plugin-users-permissions": "5.55.1",
+    "strapi-provider-email-resend": "file:./providers/strapi-provider-email-resend",
     "@strapi/strapi": "5.55.1",
     "better-sqlite3": "12.8.0",
     "fs-extra": "^10.0.0",
