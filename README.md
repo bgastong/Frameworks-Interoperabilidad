@@ -44,6 +44,12 @@ una base descartable.
 - Navegación adaptable: selector de comunidades y panel de integrantes en
   pantallas angostas; navegación y panel lateral en pantallas grandes.
 
+### Actividad 2 de TP3
+
+La integración opcional de OneSignal agrega avisos push de nuevos mensajes.
+Configuración, pruebas y comparación con FCM: [docs/onesignal.md](docs/onesignal.md).
+Las claves privadas se guardan únicamente en el entorno del backend.
+
 ## Arquitectura
 
 ```text

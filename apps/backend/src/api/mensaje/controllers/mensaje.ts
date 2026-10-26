@@ -4,6 +4,7 @@
 
 import { factories } from '@strapi/strapi';
 import type { Context } from 'koa';
+import { createOneSignal } from '../../../lib/onesignal';
 
 const mensajeUid = 'api::mensaje.mensaje';
 const canalUid = 'api::canal.canal';
@@ -107,6 +108,10 @@ export default factories.createCoreController(mensajeUid, ({ strapi }) => {
       const creado = await strapi.db.query(mensajeUid).create({
         data: { contenido, canal: canal.id, usuario: user.id },
       });
+
+      // El mensaje ya está persistido. El proveedor no bloquea la respuesta
+      // ni genera errores que lleven al cliente a duplicar el mensaje.
+      void createOneSignal(strapi).notifyMessage(canal, user.id);
 
       ctx.status = 201;
       ctx.body = {

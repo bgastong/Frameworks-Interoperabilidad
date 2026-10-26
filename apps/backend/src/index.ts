@@ -16,6 +16,7 @@ const permisosAutenticado = [
   'api::canal.canal.delete',
   'api::mensaje.mensaje.find',
   'api::mensaje.mensaje.create',
+  'api::notificacion.notificacion.context',
 ];
 
 const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:3000';

@@ -52,7 +52,14 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         email: String(data.get("email")),
         password: String(data.get("password")),
       })
-      router.replace("/")
+      // Conservar únicamente el destino del canal, nunca una URL arbitraria.
+      const source = new URLSearchParams(window.location.search)
+      const destination = new URLSearchParams()
+      for (const key of ['comunidad', 'canal']) {
+        const value = source.get(key)
+        if (value) destination.set(key, value)
+      }
+      router.replace(destination.size ? `/?${destination}` : "/")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado")
       setLoading(false)
