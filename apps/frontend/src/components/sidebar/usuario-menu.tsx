@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { RailBoton } from "@/components/sidebar/comunidades-rail"
+import { NotificacionesMenu } from "@/components/notificaciones"
+import { disconnectPush } from "@/lib/onesignal"
 
 type Props = {
   expandida: boolean
@@ -36,8 +38,10 @@ export function UsuarioMenu({ expandida }: Props) {
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent side="right" align="end">
+        <NotificacionesMenu />
         <DropdownMenuItem
-          onSelect={() => {
+          onSelect={async () => {
+            try { await disconnectPush() } catch { /* La salida local debe funcionar sin red. */ }
             logout()
             router.replace("/login")
           }}

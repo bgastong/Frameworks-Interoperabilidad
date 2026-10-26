@@ -12,6 +12,7 @@
     "setup": "node scripts/setup-env.mjs",
     "lint": "npm run lint -w frontend",
     "test:api": "node --test tests/api.test.mjs",
+    "test:push": "node --test tests/onesignal.test.mjs",
     "verify": "node scripts/verify.mjs",
     "verify:api": "node scripts/verify.mjs --api",
     "test:ui": "node --test tests/ui.test.mjs"

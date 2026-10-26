@@ -1,10 +1,11 @@
 import { AuthGuard } from "@/components/auth-guard"
 import { Home } from "@/components/home"
+import { NotificacionesProvider } from "@/components/notificaciones"
 
 export default function Page() {
   return (
     <AuthGuard>
-      <Home />
+      <NotificacionesProvider><Home /></NotificacionesProvider>
     </AuthGuard>
   )
 }
