@@ -43,6 +43,12 @@
       "private": true,
       "searchable": false
     },
+    "resetPasswordSentAt": {
+      "type": "datetime",
+      "configurable": false,
+      "private": true,
+      "searchable": false
+    },
     "confirmationToken": {
       "type": "string",
       "configurable": false,

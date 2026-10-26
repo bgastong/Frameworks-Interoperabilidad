@@ -54,3 +54,34 @@ export function expireSession() {
   logout()
   window.dispatchEvent(new Event("community-hub:session-expired"))
 }
+
+// Hace un POST a Strapi y traduce los errores de recuperacion de contraseña.
+async function postAuth(path: string, body: unknown) {
+  const res = await fetch(API_URL + path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  const json = await res.json()
+  if (!res.ok) {
+    const message = json?.error?.message
+    const traducciones: Record<string, string> = {
+      "Incorrect code provided": "El enlace no es válido o ya fue usado. Pedí uno nuevo.",
+      "Passwords do not match": "Las contraseñas no coinciden.",
+    }
+    throw new Error(traducciones[message] ?? message ?? "No se pudo completar la operación")
+  }
+  return json
+}
+
+// Pide a Strapi que mande el mail de recuperacion (lo envia con Resend).
+export async function pedirRecuperacion(email: string) {
+  await postAuth("/api/auth/forgot-password", { email })
+}
+
+// Cambia la contraseña con el codigo del mail y deja la sesion iniciada.
+export async function restablecerPassword(code: string, password: string, passwordConfirmation: string) {
+  const json = await postAuth("/api/auth/reset-password", { code, password, passwordConfirmation })
+  localStorage.setItem(TOKEN_KEY, json.jwt)
+  localStorage.setItem(USER_KEY, json.user.username)
+}
