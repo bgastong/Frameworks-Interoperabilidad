@@ -33,6 +33,18 @@ test('Recorrido completo: autenticación, comunidades, canales, membresías y me
     assert.equal((await request('/api/membresias')).status, 403);
     assert.equal((await request('/api/membresias', 'token-invalido')).status, 401);
   });
+  await t.test('Contexto push autenticado sin seleccionar identidades ajenas', async () => {
+    assert.equal((await request('/api/notificaciones/contexto')).status, 403);
+    assert.equal((await request('/api/notificaciones/contexto', 'token-invalido')).status, 401);
+    const own = await request('/api/notificaciones/contexto', owner.jwt);
+    assert.equal(own.status, 200);
+    assert.equal(typeof own.body.data.enabled, 'boolean');
+    const forged = await request(`/api/notificaciones/contexto?userId=${stranger.user.id}`, owner.jwt);
+    assert.deepEqual(forged.body.data, own.body.data);
+    for (const key of Object.keys(own.body.data)) {
+      assert.ok(['enabled', 'appId', 'externalId'].includes(key));
+    }
+  });
   await t.test('Estado vacío y creación de dos comunidades con canal y propietario', async () => {
     assert.deepEqual((await request('/api/membresias', owner.jwt)).body.data, []);
     for (const name of ['Comunidad Alfa', 'Comunidad Beta']) {

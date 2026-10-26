@@ -56,6 +56,15 @@ export const Home = () => {
           ? propias.find(({ comunidad }) => comunidad.documentId === actual.documentId)?.comunidad ?? null
           : null)
         setRoles(Object.fromEntries(propias.map(({ comunidad, rol }) => [comunidad.documentId, rol])))
+        // El enlace de un push solo selecciona comunidades que devuelve la API
+        // autenticada. El backend vuelve a comprobar el acceso al canal.
+        const target = new URLSearchParams(window.location.search)
+        const requested = propias.find(({ comunidad }) => comunidad.documentId === target.get('comunidad'))
+        if (requested && !seleccion.current) {
+          seleccion.current = requested.comunidad.documentId
+          setComunidadActiva(requested.comunidad)
+          setCanalId(target.get('canal'))
+        }
       })
       .catch((err) => { if (vigente) setErrorComunidades(err.message) })
       .finally(() => { if (vigente) setCargandoComunidades(false) })

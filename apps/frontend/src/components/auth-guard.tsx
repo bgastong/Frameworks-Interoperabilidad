@@ -15,7 +15,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const token = useSyncExternalStore(subscribe, getToken, () => undefined)
 
   useEffect(() => {
-    if (token === null) router.replace("/login")
+    if (token === null) router.replace(`/login${window.location.search}`)
   }, [token, router])
 
   return token ? children : null
